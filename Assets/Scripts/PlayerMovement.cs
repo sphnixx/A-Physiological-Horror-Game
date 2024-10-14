@@ -12,10 +12,19 @@ public class PlayerMovement : MonoBehaviour
     public float staminaRegenRate = 5f; // Stamina regeneration rate per second
     public float sprintStaminaDrain = 10f; // Stamina drain rate while sprinting
 
+    // Stamina UI management
     public Slider staminaBar; // Reference to the Stamina UI bar
-    public AudioSource footstepSound; // Reference to the AudioSource for footsteps
-    public float footstepInterval = 0.5f; // Time interval between footstep sounds
+
+    // Footstep sound management
+    public AudioSource footstepSound;
+    public float footstepInterval = 0.5f;
     private float footstepTimer = 0f;
+
+    // Tired sound management
+    public AudioSource tiredSound; // AudioSource for tired sound
+    public float tiredStaminaThreshold = 20f; // Stamina value where the tired sound plays
+    public float tiredSoundInterval = 10f; // Time interval between tired sounds
+    private float tiredSoundTimer = 0f;
 
     private Rigidbody2D rb;
     private Vector2 movement;
@@ -24,8 +33,10 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        footstepSound = GetComponent<AudioSource>(); // Get the AudioSource attached to the player
-        staminaBar.value = stamina; // Initialize stamina bar
+
+        // Initialize stamina bar
+        staminaBar.maxValue = maxStamina;
+        staminaBar.value = stamina;
     }
 
     void Update()
@@ -40,7 +51,7 @@ public class PlayerMovement : MonoBehaviour
         // Adjust speed based on sprinting
         float currentSpeed = isSprinting ? sprintSpeed : moveSpeed;
 
-        // Handle stamina
+        // Handle stamina system
         if (isSprinting)
         {
             stamina -= sprintStaminaDrain * Time.deltaTime;
@@ -69,6 +80,22 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             footstepSound.Stop();
+        }
+
+        // Handle tired sound when stamina is low
+        if (stamina <= tiredStaminaThreshold)
+        {
+            tiredSoundTimer -= Time.deltaTime;
+
+            if (tiredSoundTimer <= 0)
+            {
+                tiredSound.Play(); // Play tired sound
+                tiredSoundTimer = tiredSoundInterval; // Reset the timer
+            }
+        }
+        else
+        {
+            tiredSoundTimer = 0f; // Reset the timer when stamina is above threshold
         }
     }
 
