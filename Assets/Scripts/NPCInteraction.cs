@@ -8,6 +8,9 @@ public class NPCInteraction : MonoBehaviour
     private Transform player; // Reference to the player's transform
     private bool isPlayingSound = false; // Tracks if the interaction sound is playing
 
+    private bool questGiven = false; // Tracks if the quest has been given
+    private bool questCompleted = false; // Tracks if the quest is completed
+
     private void Start()
     {
         player = Camera.main.transform; // Assuming the player is the camera
@@ -33,7 +36,7 @@ public class NPCInteraction : MonoBehaviour
         }
         else
         {
-            interactButton.SetActive(false);
+            interactButton.SetActive(false); // Hide the "E to interact" button when out of range
         }
 
         // Check if the sound is playing and if the player presses the Space key to skip it
@@ -53,5 +56,29 @@ public class NPCInteraction : MonoBehaviour
             isPlayingSound = true; // Set the flag to indicate the sound is playing
         }
         Debug.Log("Interacted with NPC");
+
+        // Handle the quest system
+        HandleQuest();
+    }
+
+    private void HandleQuest()
+    {
+        if (!questGiven)
+        {
+            // Give the quest to the player
+            Debug.Log("Quest Given: Bring me some water.");
+            questGiven = true;
+        }
+        else if (questGiven && !questCompleted)
+        {
+            // If the quest is already given, update progress or complete it (placeholder logic)
+            Debug.Log("Quest In Progress: Have you brought the water?");
+            // Add additional logic here to check if the player has the water
+        }
+        else if (questCompleted)
+        {
+            // If the quest is completed
+            Debug.Log("Quest Completed: Thank you for bringing the water.");
+        }
     }
 }
