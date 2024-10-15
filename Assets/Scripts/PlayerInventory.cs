@@ -29,7 +29,7 @@ public class PlayerInventory : MonoBehaviour
             EquipItem(item2, "Item 2 equipped");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3)) // Press 3
-        {
+        {   
             EquipItem(item3, "Item 3 equipped");
         }
     }
