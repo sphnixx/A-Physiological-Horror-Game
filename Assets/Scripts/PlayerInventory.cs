@@ -4,18 +4,33 @@ using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
+    // Singleton instance
+    public static PlayerInventory instance;
+
     // Serialized fields for inventory slots
     [SerializeField] private GameObject item1; // Sword
     [SerializeField] private GameObject item2;
     [SerializeField] private GameObject item3;
+    [SerializeField] private GameObject waterItem; // Water item
 
     // Variables to track currently equipped item
     private GameObject equippedItem;
 
     private Transform swordTransform; // Sword's transform for adjustment
+    private List<GameObject> inventoryItems = new List<GameObject>(); // List to store items in the inventory
 
-    void Start()
+    void Awake()
     {
+        // Ensure that there is only one instance of PlayerInventory
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy duplicate instance
+        }
+
         // Assuming item1 is the sword, let's deactivate it by default
         item1.SetActive(false);
         swordTransform = item1.transform; // Get the sword's transform for future adjustments
@@ -27,7 +42,6 @@ public class PlayerInventory : MonoBehaviour
     void Update()
     {
         HandleInventoryInput();
-        HandleUnequipInput(); // Check for unequip action
     }
 
     // Handle input for inventory slots
@@ -44,15 +58,6 @@ public class PlayerInventory : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Alpha3)) // Press 3
         {
             EquipItem(item3, "Item 3 equipped");
-        }
-    }
-
-    // Handle input for unequipping items
-    void HandleUnequipInput()
-    {
-        if (Input.GetKeyDown(KeyCode.Q)) // Press Q to unequip the current item
-        {
-            UnequipItem();
         }
     }
 
@@ -75,23 +80,26 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
-    // Unequip the currently equipped item
-    void UnequipItem()
-    {
-        if (equippedItem != null)
-        {
-            equippedItem.SetActive(false); // Deactivate the item
-            Debug.Log(equippedItem.name + " unequipped");
-            equippedItem = null; // Clear the reference to the equipped item
-        }
-    }
-
     // Adjust the sword's position and rotation to appear as if the player is holding it
     void AdjustSwordPosition()
     {
         // Adjust sword's position and rotation relative to the player (who is a square)
-        swordTransform.localPosition = new Vector3(0.397f, 0.808f, 0.01604102f); // Position it as if held by the player
+        swordTransform.localPosition = new Vector3(0.397f, 0.808f, 0.01604102f); // Position it as if held by the player (adjust as needed)
         swordTransform.localRotation = Quaternion.Euler(0f, 0f, 0f); // Adjust the rotation to make it look held
         swordTransform.localScale = new Vector3(3.423677f, 3.184142f, 1.6541f); // Scale the sword appropriately
+    }
+
+    // Method to pick up an item
+    public void PickUpItem(GameObject item)
+    {
+        inventoryItems.Add(item);
+        item.SetActive(false); // Hide the item in the world
+        Debug.Log(item.name + " picked up!");
+    }
+
+    // Method to check if the player has the water item
+    public static bool HasItem(GameObject item)
+    {
+        return instance.inventoryItems.Contains(item);
     }
 }

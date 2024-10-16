@@ -11,6 +11,8 @@ public class NPCInteraction : MonoBehaviour
     private bool questGiven = false; // Tracks if the quest has been given
     private bool questCompleted = false; // Tracks if the quest is completed
 
+    [SerializeField] private GameObject waterObject; // Assign the water GameObject in the inspector
+
     private void Start()
     {
         player = Camera.main.transform; // Assuming the player is the camera
@@ -71,14 +73,20 @@ public class NPCInteraction : MonoBehaviour
         }
         else if (questGiven && !questCompleted)
         {
-            // If the quest is already given, update progress or complete it (placeholder logic)
-            Debug.Log("Quest In Progress: Have you brought the water?");
-            // Add additional logic here to check if the player has the water
+            // Check if the player has picked up the water
+            if (PlayerInventory.HasItem(waterObject))
+            {
+                Debug.Log("Quest Completed: Thank you for bringing the water.");
+                questCompleted = true; // Mark the quest as completed
+            }
+            else
+            {
+                Debug.Log("Quest In Progress: Have you brought the water?");
+            }
         }
         else if (questCompleted)
         {
-            // If the quest is completed
-            Debug.Log("Quest Completed: Thank you for bringing the water.");
+            Debug.Log("You have already completed this quest.");
         }
     }
 }
